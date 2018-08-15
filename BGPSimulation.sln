@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BGPSimulation", "BGPSimulation\BGPSimulation.vcxproj", "{D1F19613-61A4-45AA-B040-6F0B2CC84FF8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gTRee", "gTRee\gTRee.vcxproj", "{720B5C4B-EA6A-42C5-96F6-60E6B7791DC0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "routingTree", "routingTree\routingTree.vcxproj", "{37119490-0293-4A3A-BDC9-58673AEE59D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1F19613-61A4-45AA-B040-6F0B2CC84FF8}.Debug|x64.ActiveCfg = Debug|x64
+		{D1F19613-61A4-45AA-B040-6F0B2CC84FF8}.Debug|x64.Build.0 = Debug|x64
+		{D1F19613-61A4-45AA-B040-6F0B2CC84FF8}.Release|x64.ActiveCfg = Release|x64
+		{D1F19613-61A4-45AA-B040-6F0B2CC84FF8}.Release|x64.Build.0 = Release|x64
+		{720B5C4B-EA6A-42C5-96F6-60E6B7791DC0}.Debug|x64.ActiveCfg = Debug|x64
+		{720B5C4B-EA6A-42C5-96F6-60E6B7791DC0}.Debug|x64.Build.0 = Debug|x64
+		{720B5C4B-EA6A-42C5-96F6-60E6B7791DC0}.Release|x64.ActiveCfg = Release|x64
+		{720B5C4B-EA6A-42C5-96F6-60E6B7791DC0}.Release|x64.Build.0 = Release|x64
+		{37119490-0293-4A3A-BDC9-58673AEE59D5}.Debug|x64.ActiveCfg = Debug|x64
+		{37119490-0293-4A3A-BDC9-58673AEE59D5}.Debug|x64.Build.0 = Debug|x64
+		{37119490-0293-4A3A-BDC9-58673AEE59D5}.Release|x64.ActiveCfg = Release|x64
+		{37119490-0293-4A3A-BDC9-58673AEE59D5}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19930965-8564-4F94-8FD7-23EEF300ABED}
+	EndGlobalSection
+EndGlobal
