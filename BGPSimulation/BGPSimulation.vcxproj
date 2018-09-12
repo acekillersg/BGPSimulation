@@ -20,7 +20,11 @@
     <CudaCompile Include="simulator.cu" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="20170901.as-rel.txt" />
+    <Text Include="data_L.txt" />
+    <Text Include="data_S.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tree.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D1F19613-61A4-45AA-B040-6F0B2CC84FF8}</ProjectGuid>

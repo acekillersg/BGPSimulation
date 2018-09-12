@@ -9,6 +9,11 @@
 #define TREE_HPP_
 
 #include "helper.hpp"
+#include <fstream>
+#include <vector>
+
+using namespace std;
+
 
 #define MAX_CONTENT 500000
 
@@ -42,6 +47,7 @@ public:
 };
 
 class TreeNode : public ManagedMemObj {
+public:
 	int depth;
 	int element;
 	TreeNode* parent;
@@ -75,35 +81,108 @@ class TreeNode : public ManagedMemObj {
 	~TreeNode() {}
 };
 
-class ArrayNode : public ManagedMemObj {
+
+class RouteTree : public ManagedMemObj {
+private:
+	int root1value;
+	int root2value;
+	int root3value;
+	TreeNode* root;
+	TreeNode** markInTree;
+	int subTreeSize;
+	void DFSWholeTree(TreeNode*);
+	void printTreeByDeep(TreeNode*, ofstream&);
+	bool traversalSubTree(int);
+	bool printSubTree(int, ofstream&);
 public:
-	int val;
-	ArrayNode* next;
+	RouteTree(int originAS)
+	{
+		root1value = originAS;
+		root2value = -1;
+		root3value = -1;
+		root = new TreeNode(originAS);
 
-	ArrayNode() : val(0), next(nullptr) {}
-	ArrayNode(int v) {
-		this->val = v;
-		this->next = nullptr;
+		// markInTree = new TreeNode*[MAX_CONTENT];
+		CudaSafeCall(cudaMallocManaged(&markInTree, sizeof(TreeNode*) * MAX_CONTENT));
+
+		for (int i = 0; i < MAX_CONTENT; i++)
+			markInTree[i] = NULL;
+
+		markInTree[originAS] = root;
+		subTreeSize = 0;
 	}
+	RouteTree(int firstOrigin, int secondOrigin)
+	{
+		root1value = firstOrigin;
+		root2value = secondOrigin;
+		root3value = -1;
+		root = new TreeNode[2];
+		root[0].element = firstOrigin;
+		root[1].element = secondOrigin;
 
-	// assignment function overloading
-	ArrayNode& operator= (const ArrayNode& other) {
-		this->val = other.val;
-		this->next = other.next;
-		return *this;
+		//markInTree = new TreeNode*[MAX_CONTENT];
+		CudaSafeCall(cudaMallocManaged(&markInTree, sizeof(TreeNode*) * MAX_CONTENT));
+
+		for (int i = 0; i < MAX_CONTENT; i++)
+			markInTree[i] = NULL;
+
+		markInTree[firstOrigin] = &root[0];
+		markInTree[secondOrigin] = &root[1];
+		subTreeSize = 0;
 	}
+	RouteTree(int firstOrigin, int secondOrigin, int thirdOrigin)
+	{
+		root1value = firstOrigin;
+		root2value = secondOrigin;
+		root3value = thirdOrigin;
+		root = new TreeNode[3];
+		root[0].element = firstOrigin;
+		root[1].element = secondOrigin;
+		root[2].element = thirdOrigin;
 
-	~ArrayNode() {}
+		//markInTree = new TreeNode*[MAX_CONTENT];
+		CudaSafeCall(cudaMallocManaged(&markInTree, sizeof(TreeNode*) * MAX_CONTENT));
+
+		for (int i = 0; i < MAX_CONTENT; i++)
+			markInTree[i] = NULL;
+
+		markInTree[firstOrigin] = &root[0];
+		markInTree[secondOrigin] = &root[1];
+		markInTree[thirdOrigin] = &root[2];
+		subTreeSize = 0;
+	}
+	~RouteTree()
+	{
+		if (root2value != -1)
+		{
+			//delete[] markInTree[root1value];
+			//markInTree[root1value] = NULL;
+			//markInTree[root2value] = NULL;
+			//if (root3value != -1)
+			//	markInTree[root3value] = NULL;
+		}
+		for (int i = 0; i < MAX_CONTENT; i++)
+		{
+			//if (markInTree[i] != NULL)
+			//	delete[] markInTree[i];
+		}
+		CudaSafeCall(cudaFree(markInTree));
+	}
+	bool addNode(int, int);
+	bool printPathToRoot(int);
+	void printTreeInfo(ofstream&);
+	vector<int> getPathToRoot(int);
+	int getRoutesOnTheLink(int, int);
+	//map<pair<int, int>, int> getBottlenecks(int, bool anycast = false);
 };
 
-class ArrayNodeHead : public ManagedMemObj {
+class ArrayNode {
 public:
-	int AS;
-	ArrayNode* headPtr;
-	ArrayNode* tailPtr;
+	int start_idx;
+	int end_idx;
 
-	ArrayNodeHead() : AS(-1), headPtr(nullptr), tailPtr(nullptr) {}
-	~ArrayNodeHead() {}
+	ArrayNode() : start_idx(0), end_idx(0) {}
+	~ArrayNode() {}
 };
 
 #endif /* TREE_HPP_ */

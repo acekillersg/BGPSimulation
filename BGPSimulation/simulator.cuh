@@ -20,28 +20,33 @@
 
 using namespace std;
 
-
-class IDR_Simulator {
-private:
+class Simulator {
+public:
 	int origin;
 	int hijacker;
 	int triple;
 	int totalAS;
-	//RouteTree* rt;
-	//RouteTree* rt_h;
+	RouteTree* rt;
+	RouteTree* rt_h;
 	map<pair<int, int>, int> bottlenecks;
 	int* pathLength;
 	bool* isHijack;
 
-	// changed to GPU
 //    vector<int> buffer;
-//    vector<int>* provider;
-//    vector<int>* peer;
-//    vector<int>* customer;
-	ArrayNodeHead* provider;
-	ArrayNodeHead* peer;
-	ArrayNodeHead* customer;
+	int* buffer;
+    vector<int>* provider;
+    vector<int>* peer;
+    vector<int>* customer;
 
+	ArrayNode* provider_idx;
+	ArrayNode* peer_idx;
+	ArrayNode* customer_idx;
+	int* provider_val;
+	int* peer_val;
+	int* customer_val;
+	int provider_val_len;
+	int peer_val_len;
+	int customer_val_len;
 
 	bool isDigit(string);
 	void initSimulation(int, int, int, vector<int>);
@@ -50,66 +55,63 @@ private:
 	void downstreamSearch(int);
 	bool pathComp(int, int);
 public:
-	IDR_Simulator() {
+	Simulator() {
 		totalAS = 0;
-		//rt = NULL;
-		//rt_h = NULL;
-		pathLength = new int[MAX_CONTENT];
+		rt = NULL;
+		rt_h = NULL;
+
+		//pathLength = new int[MAX_CONTENT];
+		CudaSafeCall(cudaMallocManaged(&pathLength, sizeof(int) * MAX_CONTENT));
+
 		origin = hijacker = triple = -1;
-		isHijack = new bool[MAX_CONTENT];
+		
+		//isHijack = new bool[MAX_CONTENT];
+		CudaSafeCall(cudaMallocManaged(&isHijack, sizeof(bool) * MAX_CONTENT));
 
-		//        this->provider = new vector<int>[MAX_CONTENT];
-		//        this->peer = new vector<int>[MAX_CONTENT];
-		//        this->customer = new vector<int>[MAX_CONTENT];
-		CudaSafeCall(cudaMallocManaged(&this->provider, sizeof(ArrayNodeHead) * MAX_CONTENT));
-		CudaSafeCall(cudaMallocManaged(&this->peer, sizeof(ArrayNodeHead) * MAX_CONTENT));
-		CudaSafeCall(cudaMallocManaged(&this->customer, sizeof(ArrayNodeHead) * MAX_CONTENT));
+		provider_val_len = 0;
+		peer_val_len = 0;
+		customer_val_len = 0;
+
+		CudaSafeCall(cudaMallocManaged(&buffer, sizeof(int) * (MAX_CONTENT + 1)));
+
+		this->provider = new vector<int>[MAX_CONTENT];
+		this->peer = new vector<int>[MAX_CONTENT];
+		this->customer = new vector<int>[MAX_CONTENT];
+		CudaSafeCall(cudaMallocManaged(&this->provider_idx, sizeof(ArrayNode) * MAX_CONTENT));
+		CudaSafeCall(cudaMallocManaged(&this->peer_idx, sizeof(ArrayNode) * MAX_CONTENT));
+		CudaSafeCall(cudaMallocManaged(&this->customer_idx, sizeof(ArrayNode) * MAX_CONTENT));
+
+		CudaSafeCall(cudaMemset(this->provider_idx, 0, sizeof(ArrayNode) * MAX_CONTENT));
+		CudaSafeCall(cudaMemset(this->peer_idx, 0, sizeof(ArrayNode) * MAX_CONTENT));
+		CudaSafeCall(cudaMemset(this->customer_idx, 0, sizeof(ArrayNode) * MAX_CONTENT));
 	}
-	~IDR_Simulator() {
-		//if (rt != NULL)
-		//	delete rt;
-		//if (rt_h != NULL)
-		//	delete rt_h;
-		delete[] isHijack;
-		delete[] pathLength;
+	~Simulator() {
+		if (rt != NULL)
+			delete rt;
+		if (rt_h != NULL)
+			delete rt_h;
+
+		CudaSafeCall(cudaFree(this->pathLength));
+		CudaSafeCall(cudaFree(this->isHijack));
+		CudaSafeCall(cudaFree(this->buffer));
 
 
-		//        delete[] this->provider;
-		//        delete[] this->peer;
-		//        delete[] this->customer;
-		int i;
-		for (i = 0; i < MAX_CONTENT; i++) {
-			ArrayNode* curr_ptr = this->provider[i].headPtr;
-			ArrayNode* next_ptr = nullptr;
-			while (curr_ptr != nullptr) {
-				next_ptr = curr_ptr->next;
-				delete curr_ptr;
-				curr_ptr = next_ptr;
-			}
-			CudaSafeCall(cudaFree(this->provider));
-		}
-		for (i = 0; i < MAX_CONTENT; i++) {
-			ArrayNode* curr_ptr = this->peer[i].headPtr;
-			ArrayNode* next_ptr = nullptr;
-			while (curr_ptr->next != nullptr) {
-				next_ptr = curr_ptr->next;
-				delete curr_ptr;
-				curr_ptr = next_ptr;
-			}
-			CudaSafeCall(cudaFree(this->peer));
-		}
-		for (i = 0; i < MAX_CONTENT; i++) {
-			ArrayNode* curr_ptr = this->customer[i].headPtr;
-			ArrayNode* next_ptr = nullptr;
-			while (curr_ptr->next != nullptr) {
-				next_ptr = curr_ptr->next;
-				delete curr_ptr;
-				curr_ptr = next_ptr;
-			}
-			CudaSafeCall(cudaFree(this->customer));
-		}
+		delete[] this->provider;
+		delete[] this->peer;
+		delete[] this->customer;
+
+		CudaSafeCall(cudaFree(this->provider_idx));
+		CudaSafeCall(cudaFree(this->peer_idx));
+		CudaSafeCall(cudaFree(this->customer_idx));
+		CudaSafeCall(cudaFree(this->provider_val));
+		CudaSafeCall(cudaFree(this->peer_val));
+		CudaSafeCall(cudaFree(this->customer_val));
 	}
-	void showTopo();// for debug only
+
+	void alloc_array_val();
+	void copyToDevice();
+
+	void showTopo(int no_to_show);// for debug only
 	void printASPath1(int asn); // for debug only
 	void printASPath2(int asn); // for debug only
 	void printTree(ofstream& fout);

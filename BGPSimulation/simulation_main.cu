@@ -12,9 +12,15 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	IDR_Simulator* sim = new IDR_Simulator();
-	sim->readTopo("C://Users//jiong.he//source//repos//BGPSimulation//BGPSimulation//20170901.as-rel.txt"); // topo file address
-	//delete sim;
+	Simulator* sim = new Simulator();
+	sim->readTopo("C://Users//jiong.he//source//repos//BGPSimulation//BGPSimulation//data_S.txt");
+	sim->alloc_array_val();
+	sim->copyToDevice();
+	sim->showTopo(-1);
+
+	sim->simulateBGP(1);
+
+	delete sim;
 	cout << "Done!" << endl;
 	return 0;
 }

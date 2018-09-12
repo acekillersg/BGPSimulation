@@ -58,6 +58,7 @@ bool RouteTree::printSubTree(int asn, ofstream& fout)
 	return true;
 }
 
+// add new node to the tree
 bool RouteTree::addNode(int p, int c)
 {
 	if (markInTree[p] == NULL || markInTree[c] != NULL)

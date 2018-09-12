@@ -97,7 +97,7 @@ int main(void) {
 	data[1][1].prop = 4;
 	data[1][2].prop = 5;
 
-	add << <1, 1 >> > (data);
+	add <<< 1, 1 >>> (data);
 	CudaCheckError();
 
 	printf("On host, data[0][0]: value = %d\n", data[0][0].prop);
